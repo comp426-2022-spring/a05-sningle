@@ -27,22 +27,249 @@
   </head>
   <body>
     <nav>
-      <button id="homenav">Home</button>
-      <button id="singlenav">Flip one coin</button>
-      <button id="multinav">Flip multiple coins</button>
-      <button id="guessnav">Guess the result</button>
+      <button id="homenav" onclick="showHome()">Home</button>
+      <button id="singlenav" onclick="showSing()">Flip one coin</button>
+      <button id="multinav" onclick="showMult()">Flip multiple coins</button>
+      <button id="guessnav" onclick="showGuess()">Guess the result</button>
     </nav>
+
+    <script>
+      var sing_active = false;
+      var mult_active = false;
+      var home_active = false;
+      var guess_active = false;
+      function showSing() {
+        var x = document.getElementById("single");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+          var sing_active = true;
+        } else {
+          x.style.display = "none";
+          var sing_active = false;
+        }
+      }
+
+      function showHome() {
+        var x = document.getElementById("home");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+          var mult_active = true;
+        } else {
+          x.style.display = "none";
+          var mult_active = false;
+        }
+      }
+
+      function showMult() {
+        var x = document.getElementById("multi");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+          var home_active = true;
+        } else {
+          x.style.display = "none";
+          var home_active = false;
+        }
+      }
+
+      function showGuess() {
+        var x = document.getElementById("guess");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+          var guess_active = true;
+        } else {
+          x.style.display = "none";
+          var guess_active = false;
+        }
+      }
+
+    </script>
+
     <div id="home">
+      <script>
+        if (home_active === true) {}
+      </script>
       
     </div>    
     <div id="single" class="hidden">
-      
+      <html>
+        <head>
+          <title>Demo Coin</title>
+          <style>
+            img#quarter {
+              width: 100px;
+            }
+          </style>
+        </head>
+	      <body>
+		
+          <!-- A "coin" button -->
+              <button id="coin">Flip?</button>
+          <!-- A status paragraph -->
+              <!-- <p id="active"></p> -->
+          <!-- A result paragraph-->
+              <p>Result: <span id="result"></span></p>
+          <!-- An image of a US quarter (North Carolina variant) -->
+              <img src="./assets/img/coin.png" id="quarter">
+
+              <script>
+                
+          // // Event listener for whatever is being clicked 
+          // 			document.addEventListener("click", activeNow);
+          // // Replace text in anything with "active" id
+          //       function activeNow() {
+          //       	const active_now = document.activeElement
+          //       	document.getElementById("active").innerHTML = active_now;
+          //       	console.log(active_now)
+          //       }
+          // Button coin flip element
+                const coin = document.getElementById("coin")
+          // Add event listener for coin button
+                coin.addEventListener("click", flipCoin)
+                function flipCoin() {
+                          fetch('http://localhost:5000/app/flip/', {mode: 'cors'})
+                    .then(function(response) {
+                      return response.json();
+                    })
+                  .then(function(result) {
+                    console.log(result);
+                    document.getElementById("result").innerHTML = result.flip;
+                    document.getElementById("quarter").setAttribute("src", "./assets/img/"+result.flip+".png");
+                    coin.disabled = true
+                  })
+          				let flip = "FLIPPED"
+          				document.getElementById("coin").innerHTML = flip;
+          				console.log("Coin has been flipped. Result: "+ flip)
+                }
+              
+              </script>
+            </body>
+        </html>
     </div>
     <div id="multi" class="hidden">
-      
+      <html>
+        <head>
+          <title>Demo Coin</title>
+        </head>
+        <body>
+          <div id="multi">
+            <h1>Flip many coins</h1>
+            <form id="coins">
+              <label for="number">
+                <strong>How many coins?</strong>
+              </label>
+              <input type="number" name="number" id="number">
+              <input type="submit" value="Flip 'em!">
+            </form>
+
+            <h2>Results</h2>
+              <p id="heads"></p>
+              <p id="tails"></p>
+          </div>
+          <script>
+            // Our flip many coins form
+            const coins = document.getElementById("coins")
+            // Add event listener for coins form
+            coins.addEventListener("submit", flipCoins)
+            // Create the submit handler
+            async function flipCoins(event) {
+              event.preventDefault();
+              
+              const endpoint = "app/flip/coins/"
+              const url = document.baseURI+endpoint
+
+              const formEvent = event.currentTarget
+
+              try {
+                const formData = new FormData(formEvent);
+                const flips = await sendFlips({ url, formData });
+
+                console.log(flips);
+                document.getElementById("heads").innerHTML = "Heads: "+flips.summary.heads;
+                document.getElementById("tails").innerHTML = "Tails: "+flips.summary.tails;
+              } catch (error) {
+                console.log(error);
+              }
+            }
+            // Create a data sender
+            async function sendFlips({ url, formData }) {
+              const plainFormData = Object.fromEntries(formData.entries());
+              const formDataJson = JSON.stringify(plainFormData);
+              console.log(formDataJson);
+
+              const options = {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Accept: "application/json"
+                },
+                body: formDataJson
+              };
+
+              const response = await fetch(url, options);
+              return response.json()
+            }
+          </script>
+        </body>
+      </html>
     </div>
     <div id="guess" class="hidden">
-      
+        <html>
+        <head>
+          <title>Demo Guess</title>
+        </head>
+	      <body>
+		
+          <!-- A "coin" button -->
+              <button id="guess_heads">Heads</button>
+              <button id="guess_tails">Tails</button>
+              <p>Result: <span id="call_result"></span></p>
+              <script>
+                  // Button coin flip element
+                  const heads = document.getElementById("guess_heads")
+                  const tails = document.getElementById("guess_tails")
+                  // Add event listener for coin button
+                  heads.addEventListener("click", flipHeads)
+                  tails.addEventListener("click", flipTails)
+
+                  function flipHeads() {
+                    guess: heads;
+                          fetch('http://localhost:5000/app/flip/call/', {mode: 'cors'})
+                    .then(function(response) {
+                      return response.text();
+                    })
+                  .then(function(result) {
+                    console.log(result);
+                    document.getElementById("result").innerHTML = result.flip;
+                    heads.disabled = true
+                    tails.disabled = true
+                  })
+          				let flip = "CHOSEN"
+          				document.getElementById("guess_heads").innerHTML = flip;
+                  document.getElementById("guess_tails").innerHTML = "NOT CHOSEN";
+          				console.log("Coin has been flipped. Result: "+ flip)
+                }
+
+                function flipTails() {
+                  guess: tails
+                          fetch('http://localhost:5000/app/flip/call/', {mode: 'cors'})
+                    .then(function(response) {
+                      return response.text();
+                    })
+                  .then(function(result) {
+                    console.log(result);
+                    document.getElementById("call_result").innerHTML = result.flip;
+                    heads.disabled = true
+                    tails.disabled = true
+                  })
+          				let flip = "CHOSEN"
+          				document.getElementById("guess_tails").innerHTML = flip;
+                  document.getElementById("guess_heads").innerHTML = "NOT CHOSEN";
+          				console.log("Coin has been flipped. Result: "+ flip)
+                }
+                
+              </script>
+            </body>
+          </html>
     </div>
 	<script src="main.js"></script>
   </body>
