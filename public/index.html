@@ -174,7 +174,7 @@
             async function flipCoins(event) {
               event.preventDefault();
               
-              const endpoint = "app/flip/coins/"
+              const endpoint = "app/flips/coins"
               const url = document.baseURI+endpoint
 
               const formEvent = event.currentTarget
@@ -202,16 +202,19 @@
                   "Content-Type": "application/json",
                   Accept: "application/json"
                 },
-                body: formDataJson
+                body: formDataJson,
+                "form": "test"
               };
-
+              console.log("failing?")
               const response = await fetch(url, options);
+              console.log("test")
               return response.json()
             }
           </script>
         </body>
       </html>
     </div>
+    
     <div id="guess" class="hidden">
         <html>
         <head>
@@ -220,7 +223,7 @@
 	      <body>
 		
           <!-- A "coin" button -->
-              <button id="guess_heads">Heads</button>
+              <!-- <button id="guess_heads">Heads</button>
               <button id="guess_tails">Tails</button>
               <p>Result: <span id="call_result"></span></p>
               <script>
@@ -265,9 +268,10 @@
           				document.getElementById("guess_tails").innerHTML = flip;
                   document.getElementById("guess_heads").innerHTML = "NOT CHOSEN";
           				console.log("Coin has been flipped. Result: "+ flip)
-                }
+                } -->
                 
               </script>
+              
             </body>
           </html>
     </div>

@@ -10,7 +10,11 @@ const help = args.help
 
 
 const express = require('express')
+var bodyParser = require('body-parser')
 const app = express()
+
+app.use(express.json());
+app.use(express.urlencoded());
 
 //const db = require('./database')
 const morgan = require('morgan')
@@ -123,6 +127,7 @@ app.get('/app/flip/call/:guess(heads|tails)/', (req, res) => {
 })
 
 app.post('/app/flips/coins', (req, res) => {
+    console.log(req.body)
     const flip_array = coinFlips(req.body.number);
     const sum = countFlips(flip_array)
     res.status(200).json({"raw":flip_array,"summary":sum})
